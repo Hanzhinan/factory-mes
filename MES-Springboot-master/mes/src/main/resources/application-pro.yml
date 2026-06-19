@@ -1,3 +1,7 @@
+basedata:
+  init:
+    enabled: false
+
 spring:
   mvc:
     view:

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wangziyang.mes.basedata.entity.SpMaterile;
 import com.wangziyang.mes.basedata.entity.SpTableManager;
-import com.wangziyang.mes.basedata.request.spMaterileReq;
+import com.wangziyang.mes.basedata.request.SpMaterielReq;
 import com.wangziyang.mes.basedata.service.ISpMaterileService;
 import com.wangziyang.mes.common.BaseController;
 import com.wangziyang.mes.common.Result;
@@ -35,8 +35,8 @@ import java.util.Objects;
  * @since 2020-03-19
  */
 @Controller
-@RequestMapping("/basedata/materile")
-public class SpMaterileController extends BaseController {
+@RequestMapping("/basedata/materiel")
+public class SpMaterielController extends BaseController {
 
     /**
      * 物料服务
@@ -61,7 +61,7 @@ public class SpMaterileController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "model", value = "模型", defaultValue = "模型")})
     @GetMapping("/list-ui")
     public String listUI(Model model) {
-        return "basedata/materile/list";
+        return "basedata/materiel/list";
     }
 
 
@@ -79,7 +79,7 @@ public class SpMaterileController extends BaseController {
             SpMaterile SpMaterile = iSpMaterileService.getById(record.getId());
             model.addAttribute("result", SpMaterile);
         }
-        return "basedata/materile/addOrUpdate";
+        return "basedata/materiel/addOrUpdate";
     }
 
 
@@ -93,8 +93,8 @@ public class SpMaterileController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "req", value = "请求参数", defaultValue = "请求参数")})
     @PostMapping("/page")
     @ResponseBody
-    public Result page(spMaterileReq req) {
-        QueryWrapper queryWrapper =new QueryWrapper();
+    public Result page(SpMaterielReq req) {
+        QueryWrapper<SpMaterile> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(req.getMaterielLike()))
         {
             queryWrapper.like("materiel",req.getMaterielLike());

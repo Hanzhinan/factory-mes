@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wangziyang.mes.basedata.entity.SpMaterile;
 import com.wangziyang.mes.basedata.entity.SpTableManager;
-import com.wangziyang.mes.basedata.request.spMaterileReq;
+import com.wangziyang.mes.basedata.request.SpMaterielReq;
 import com.wangziyang.mes.common.BaseController;
 import com.wangziyang.mes.common.Result;
 import com.wangziyang.mes.order.entity.SpOrder;
@@ -80,7 +80,7 @@ public class SpOrderController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "req", value = "请求参数", defaultValue = "请求参数")})
     @PostMapping("/page")
     @ResponseBody
-    public Result page(spMaterileReq req) {
+    public Result page(SpMaterielReq req) {
         QueryWrapper queryWrapper = new QueryWrapper();
         if (StringUtils.isNotEmpty(req.getMaterielLike())) {
             queryWrapper.like("materiel", req.getMaterielLike());
