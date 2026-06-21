@@ -11,161 +11,132 @@
 <body>
 <div class="splayui-container">
     <div class="splayui-main">
-        <form id="js-search-form" class="layui-form" lay-filter="js-q-form-filter">
-            <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">员工编号</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="staffCode" autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">员工姓名</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="staffName" autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">班组名称</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="teamName" autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <a class="layui-btn" lay-submit lay-filter="js-search-filter"><i
-                                class="layui-icon layui-icon-search layuiadmin-button-btn"></i></a>
-                </div>
-            </div>
-        </form>
+        <div style="margin-bottom:10px;">
+            <span class="layui-badge layui-bg-blue">班组：${teamName!}</span>
+            <a class="layui-btn layui-btn-sm" id="js-add-staff"><i class="layui-icon layui-icon-add-1"></i>添加员工</a>
+        </div>
 
-        <table class="layui-hide" id="js-record-table" lay-filter="js-record-table-filter"></table>
+        <script type="text/html" id="js-table-operate">
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>移除</a>
+        </script>
+
+        <table class="layui-hide" id="js-table" lay-filter="js-table-filter"></table>
     </div>
 </div>
 
-<script type="text/html" id="js-record-table-toolbar-top">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="deleteBatch"><i
-                    class="layui-icon">&#xe640;</i>批量删除
-        </button>
-        <button class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>添加</button>
+<div id="userSelectModal" style="display:none; padding:15px;">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <input type="text" id="userSearchKey" placeholder="输入关键字搜索" autocomplete="off" class="layui-input">
+        </div>
+        <button class="layui-btn" id="userSearchBtn">搜索</button>
     </div>
-</script>
-
-<script type="text/html" id="js-record-table-toolbar-right">
-    <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</a>
-</script>
+    <div id="userTree" style="max-height:350px; overflow:auto;"></div>
+</div>
 
 <script>
-    layui.use(['form', 'table', 'spLayer', 'spTable'], function () {
-        var form = layui.form,
-            table = layui.table,
-            spLayer = layui.spLayer,
-            spTable = layui.spTable;
+    layui.use(['table', 'layer', 'tree'], function () {
+        var table = layui.table, layer = layui.layer, tree = layui.tree, $ = layui.$;
+        var teamId = '${RequestParameters.teamId!}';
 
-        var tableIns = spTable.render({
+        var tableIns = table.render({
+            elem: '#js-table',
             url: '${request.contextPath}/basedata/teamStaff/page',
-            cols: [
-                [{
-                    type: 'checkbox'
-                }, {
-                    field: 'staffCode', title: '员工编号'
-                }, {
-                    field: 'staffName', title: '员工姓名'
-                }, {
-                    field: 'teamCode', title: '班组编号'
-                }, {
-                    field: 'teamName', title: '班组名称'
-                }, {
-                    field: 'departmentName', title: '部门名称'
-                }, {
-                    field: 'position', title: '职位'
-                }, {
-                    field: 'phone', title: '联系电话'
-                }, {
-                    field: 'status', title: '状态', templet: function (d) {
-                        var statusMap = {0: '在职', 1: '离职', 2: '休假'};
-                        return statusMap[d.status] || '未知';
-                    }
-                }, {
-                    fixed: 'right',
-                    field: 'operate',
-                    title: '操作',
-                    toolbar: '#js-record-table-toolbar-right',
-                    unresize: true,
-                    width: 150
-                }]
-            ],
-            done: function (res, curr, count) {
+            method: 'post',
+            where: {teamId: teamId},
+            cols: [[
+                {type: 'numbers'},
+                {field: 'userName', title: '用户编码', templet: function(d){return d.userName || d.userId;}},
+                {field: 'status', title: '状态', templet: function(d){return d.status==1?'正常':'禁用';}},
+                {title: '操作', toolbar: '#js-table-operate', width: 100}
+            ]],
+            page: true,
+            parseData: function(res) {
+                return {
+                    "code": res.code,
+                    "msg": res.msg,
+                    "count": res.data.total,
+                    "data": res.data.records
+                };
             }
         });
 
-        $(function () {
-            form.render();
-        });
-
-        form.on('submit(js-search-filter)', function (data) {
-            tableIns.reload({
-                where: data.field,
-                page: {
-                    curr: 1
+        $('#js-add-staff').on('click', function () {
+            layer.open({
+                type: 1,
+                title: '用户选择',
+                area: ['400px', '500px'],
+                content: $('#userSelectModal'),
+                btn: ['确定', '关闭'],
+                success: function () {
+                    loadUserTree();
+                },
+                yes: function (index) {
+                    var checked = tree.getChecked('userTree');
+                    var userIds = [];
+                    collectChecked(checked, userIds);
+                    if (userIds.length === 0) {
+                        layer.msg('请选择用户');
+                        return;
+                    }
+                    var successCount = 0;
+                    var total = userIds.length;
+                    userIds.forEach(function(uid) {
+                        $.post('${request.contextPath}/basedata/teamStaff/add', {teamId: teamId, userId: uid}, function(res) {
+                            successCount++;
+                            if (successCount >= total) {
+                                layer.msg('添加完成', {icon: 1});
+                                tableIns.reload();
+                                layer.close(index);
+                            }
+                        });
+                    });
                 }
             });
-            return false;
         });
 
-        table.on('toolbar(js-record-table-filter)', function (obj) {
-            var checkStatus = table.checkStatus(obj.config.id);
-
-            if (obj.event === 'deleteBatch') {
-                var checkStatus = table.checkStatus('record-table'),
-                    data = checkStatus.data;
-                if (data.length > 0) {
-                    layer.confirm('确认要删除吗？', function (index) {
+        function loadUserTree() {
+            $.get('${request.contextPath}/basedata/teamStaff/user-tree', function (res) {
+                if (res.code === 0) {
+                    var data = convertTreeData(res.data);
+                    tree.render({
+                        elem: '#userTree',
+                        data: data,
+                        showCheckbox: true,
+                        id: 'userTree'
                     });
-                } else {
-                    layer.msg("请先选择需要删除的数据！");
+                }
+            });
+        }
+
+        function convertTreeData(nodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                nodes[i].title = nodes[i].name;
+                if (nodes[i].children && nodes[i].children.length > 0) {
+                    convertTreeData(nodes[i].children);
                 }
             }
+            return nodes;
+        }
 
-            if (obj.event === 'add') {
-                var index = spLayer.open({
-                    title: '添加班组员工',
-                    area: ['90%', '90%'],
-                    content: '${request.contextPath}/basedata/teamStaff/add-or-update-ui'
-                });
+        function collectChecked(nodes, result) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].isUser) {
+                    result.push(nodes[i].id);
+                }
+                if (nodes[i].children && nodes[i].children.length > 0) {
+                    collectChecked(nodes[i].children, result);
+                }
             }
-        });
+        }
 
-        table.on('tool(js-record-table-filter)', function (obj) {
+        table.on('tool(js-table-filter)', function (obj) {
             var data = obj.data;
-
-            if (obj.event === 'edit') {
-                spLayer.open({
-                    title: '编辑班组员工',
-                    area: ['90%', '90%'],
-                    spWhere: {id: data.id},
-                    content: '${request.contextPath}/basedata/teamStaff/add-or-update-ui'
-                });
-            }
-
             if (obj.event === 'delete') {
-                layer.confirm('确认要删除吗？', function (index) {
-                    spUtil.ajax({
-                        url: '${request.contextPath}/basedata/teamStaff/delete',
-                        async: false,
-                        type: 'POST',
-                        showLoading: true,
-                        serializable: false,
-                        data: {
-                            id: data.id
-                        },
-                        success: function (data) {
-                            tableIns.reload();
-                            layer.close(index);
-                        },
-                        error: function () {
-                        }
+                layer.confirm('确定移除该员工吗？', function (index) {
+                    $.post('${request.contextPath}/basedata/teamStaff/delete', {id: data.id}, function () {
+                        tableIns.reload();
+                        layer.close(index);
                     });
                 });
             }

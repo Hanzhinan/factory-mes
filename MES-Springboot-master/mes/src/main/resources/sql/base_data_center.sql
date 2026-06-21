@@ -1,22 +1,30 @@
-CREATE TABLE IF NOT EXISTS `sp_team_staff` (
+CREATE TABLE IF NOT EXISTS `sp_team` (
     `id` VARCHAR(64) NOT NULL COMMENT '主键ID',
-    `staff_code` VARCHAR(64) NOT NULL COMMENT '员工编号',
-    `staff_name` VARCHAR(128) NOT NULL COMMENT '员工姓名',
-    `team_code` VARCHAR(64) COMMENT '班组编号',
-    `team_name` VARCHAR(128) COMMENT '班组名称',
-    `department_id` VARCHAR(64) COMMENT '部门ID',
-    `department_name` VARCHAR(128) COMMENT '部门名称',
-    `position` VARCHAR(64) COMMENT '职位',
-    `phone` VARCHAR(32) COMMENT '联系电话',
-    `email` VARCHAR(128) COMMENT '邮箱',
-    `status` TINYINT(1) DEFAULT 0 COMMENT '状态：0-在职，1-离职，2-休假',
+    `team_code` VARCHAR(64) NOT NULL COMMENT '班组代码',
+    `team_name` VARCHAR(128) NOT NULL COMMENT '班组名称',
+    `team_descr` VARCHAR(512) COMMENT '班组描述',
+    `remark` VARCHAR(512) COMMENT '备注信息',
+    `status` TINYINT(1) DEFAULT 1 COMMENT '状态：0-禁用，1-正常',
     `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `create_username` VARCHAR(64) COMMENT '创建人',
     `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `update_username` VARCHAR(64) COMMENT '更新人',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_staff_code` (`staff_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='班组员工定义';
+    UNIQUE KEY `uk_team_code` (`team_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='班组管理';
+
+CREATE TABLE IF NOT EXISTS `sp_team_staff` (
+    `id` VARCHAR(64) NOT NULL COMMENT '主键ID',
+    `team_id` VARCHAR(64) NOT NULL COMMENT '班组ID',
+    `user_id` VARCHAR(64) NOT NULL COMMENT '系统用户ID',
+    `status` TINYINT(1) DEFAULT 1 COMMENT '状态：0-禁用，1-正常',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_username` VARCHAR(64) COMMENT '创建人',
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `update_username` VARCHAR(64) COMMENT '更新人',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_team_user` (`team_id`, `user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='班组员工绑定关系';
 
 CREATE TABLE IF NOT EXISTS `sp_group_device` (
     `id` VARCHAR(64) NOT NULL COMMENT '主键ID',
@@ -115,12 +123,16 @@ CREATE TABLE IF NOT EXISTS `sp_process_info` (
     UNIQUE KEY `uk_process_code` (`process_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='工序信息定义';
 
-DELETE FROM `sp_sys_menu` WHERE `id` IN ('20','201','202','203','204','205','206','207');
-INSERT INTO `sp_sys_menu` VALUES ('20', 'basedataCenter', '基础数据中心', '#', '1', '2', 8, '0', '', 'fa fa-database', '基础数据中心模块', NOW(), 'admin', NOW(), 'admin');
-INSERT INTO `sp_sys_menu` VALUES ('201', 'teamStaff', '班组员工定义', '/basedata/teamStaff/list-ui', '20', '3', 1, '0', '', 'fa fa-users', '班组员工定义', NOW(), 'admin', NOW(), 'admin');
-INSERT INTO `sp_sys_menu` VALUES ('202', 'groupDevice', '编组设备定义', '/basedata/groupDevice/list-ui', '20', '3', 2, '0', '', 'fa fa-cog', '编组设备定义', NOW(), 'admin', NOW(), 'admin');
-INSERT INTO `sp_sys_menu` VALUES ('203', 'workUnit', '加工单元定义', '/basedata/workUnit/list-ui', '20', '3', 3, '0', '', 'fa fa-industry', '加工单元定义', NOW(), 'admin', NOW(), 'admin');
-INSERT INTO `sp_sys_menu` VALUES ('204', 'materiel', '物料信息定义', '/basedata/materiel/list-ui', '20', '3', 4, '0', '', 'fa fa-cubes', '物料信息定义', NOW(), 'admin', NOW(), 'admin');
-INSERT INTO `sp_sys_menu` VALUES ('205', 'warehouseLocation', '库房库位定义', '/basedata/warehouseLocation/list-ui', '20', '3', 5, '0', '', 'fa fa-archive', '库房库位定义', NOW(), 'admin', NOW(), 'admin');
-INSERT INTO `sp_sys_menu` VALUES ('206', 'partComponent', '零部件定义', '/basedata/partComponent/list-ui', '20', '3', 6, '0', '', 'fa fa-wrench', '零部件定义', NOW(), 'admin', NOW(), 'admin');
-INSERT INTO `sp_sys_menu` VALUES ('207', 'processInfo', '工序信息定义', '/basedata/processInfo/list-ui', '20', '3', 7, '0', '', 'fa fa-cogs', '工序信息定义', NOW(), 'admin', NOW(), 'admin');
+DELETE FROM `sp_sys_menu` WHERE `id` IN ('20','201','2011','2012','2013','2014','202','203','204','205','206','207');
+INSERT INTO `sp_sys_menu` VALUES ('20', 'basedataCenter', '基础数据中心', '#', '1', '2', 8, '0', 'basedata:*', 'fa fa-database', '基础数据中心模块', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('201', 'team', '班组员工定义', '/basedata/team/list-ui', '20', '3', 1, '0', 'basedata:team', 'fa fa-users', '班组员工定义', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('2011', 'teamStaffViewAll', '查看完整信息', '', '201', '2', 1, '0', 'basedata:teamStaff:viewAll', '', '查看员工完整信息', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('2012', 'teamStaffAdd', '添加员工', '', '201', '2', 2, '0', 'basedata:teamStaff:add', '', '添加员工', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('2013', 'teamStaffUpdate', '修改员工', '', '201', '2', 3, '0', 'basedata:teamStaff:update', '', '修改员工', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('2014', 'teamStaffDelete', '删除员工', '', '201', '2', 4, '0', 'basedata:teamStaff:delete', '', '删除员工', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('202', 'groupDevice', '编组设备定义', '/basedata/groupDevice/list-ui', '20', '3', 2, '0', 'basedata:groupDevice', 'fa fa-cog', '编组设备定义', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('203', 'workUnit', '加工单元定义', '/basedata/workUnit/list-ui', '20', '3', 3, '0', 'basedata:workUnit', 'fa fa-industry', '加工单元定义', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('204', 'materiel', '物料信息定义', '/basedata/materiel/list-ui', '20', '3', 4, '0', 'basedata:materiel', 'fa fa-cubes', '物料信息定义', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('205', 'warehouseLocation', '库房库位定义', '/basedata/warehouseLocation/list-ui', '20', '3', 5, '0', 'basedata:warehouseLocation', 'fa fa-archive', '库房库位定义', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('206', 'partComponent', '零部件定义', '/basedata/partComponent/list-ui', '20', '3', 6, '0', 'basedata:partComponent', 'fa fa-wrench', '零部件定义', NOW(), 'admin', NOW(), 'admin');
+INSERT INTO `sp_sys_menu` VALUES ('207', 'processInfo', '工序信息定义', '/basedata/processInfo/list-ui', '20', '3', 7, '0', 'basedata:processInfo', 'fa fa-cogs', '工序信息定义', NOW(), 'admin', NOW(), 'admin');

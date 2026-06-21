@@ -207,7 +207,9 @@
             // 删除
             if (obj.event === 'delete') {
                 layer.confirm('确认要删除吗？', function (index) {
-                    obj.del();
+                    $.post('${request.contextPath}/admin/sys/user/delete', {id: data.id}, function () {
+                        tableIns.reload();
+                    });
                     layer.close(index);
                 });
             }

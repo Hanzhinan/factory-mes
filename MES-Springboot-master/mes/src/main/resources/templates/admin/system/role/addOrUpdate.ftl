@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>添加用户</title>
+    <title>添加/编辑角色</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -46,6 +46,16 @@
                     </div>
                 </div>
 
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label sp-required">菜单授权
+                        </label>
+                        <div class="layui-input-block" style="width: 310px;">
+                            <div id="js-menu-tree" style="max-height: 400px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="layui-form-item layui-hide">
                     <div class="layui-input-block">
                         <input id="js-id" name="id" value="${result.id}"/>
@@ -57,15 +67,86 @@
     </div>
 </div>
 <script>
-    layui.use(['form', 'util'], function () {
+    layui.use(['form', 'util', 'tree'], function () {
         var form = layui.form,
-            util = layui.util;
+            util = layui.util,
+            tree = layui.tree;
 
-        //监听提交
+        var roleId = '${result.id}';
+        var treeIns;
+
+        function convertTreeData(nodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                nodes[i].title = nodes[i].name;
+                if (nodes[i].children && nodes[i].children.length > 0) {
+                    convertTreeData(nodes[i].children);
+                }
+            }
+            return nodes;
+        }
+
+        function loadMenuTree() {
+            $.ajax({
+                type: "GET",
+                url: "${request.contextPath}/admin/sys/role/menu-tree",
+                data: {roleId: roleId},
+                success: function (result) {
+                    if (result.code === 0) {
+                        var treeData = convertTreeData(result.data);
+                        treeIns = tree.render({
+                            elem: '#js-menu-tree',
+                            data: treeData,
+                            showCheckbox: true,
+                            id: 'menuTree',
+                            click: function (obj) {
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        loadMenuTree();
+
         form.on('submit(js-submit-filter)', function (data) {
+            var menuIds = tree.getChecked('menuTree');
+            var checkedIds = [];
+            function collectIds(nodes) {
+                for (var i = 0; i < nodes.length; i++) {
+                    checkedIds.push(nodes[i].id);
+                    if (nodes[i].children && nodes[i].children.length > 0) {
+                        collectIds(nodes[i].children);
+                    }
+                }
+            }
+            collectIds(menuIds);
+
             spUtil.submitForm({
                 url: "${request.contextPath}/admin/sys/role/add-or-update",
-                data: data.field
+                data: data.field,
+                success: function (res) {
+                    var currentRoleId = res.data || roleId;
+                    $.ajax({
+                        type: "POST",
+                        url: "${request.contextPath}/admin/sys/role/save-permissions?roleId=" + currentRoleId,
+                        data: JSON.stringify(checkedIds),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (permResult) {
+                            if (permResult.code === 0) {
+                                layer.msg('保存成功', {icon: 1});
+                                setTimeout(function () {
+                                    parent.layer.closeAll();
+                                }, 1000);
+                            } else {
+                                layer.alert(permResult.msg, {icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.alert('保存权限失败', {icon: 2});
+                        }
+                    });
+                }
             });
 
             return false;
