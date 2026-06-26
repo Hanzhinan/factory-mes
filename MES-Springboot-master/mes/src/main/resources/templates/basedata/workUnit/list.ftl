@@ -57,6 +57,38 @@
             spLayer = layui.spLayer,
             spTable = layui.spTable;
 
+        // 缓存班组列表，用于显示班组名称
+        var teamListCache = [];
+
+        // 加载班组列表
+        function loadTeamList() {
+            $.ajax({
+                type: "POST",
+                url: '${request.contextPath}/basedata/team/page',
+                data: {pageNo: 1, pageSize: 1000},
+                async: false,
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        teamListCache = res.data.records;
+                    }
+                }
+            });
+        }
+
+        // 根据teamId获取teamName
+        function getTeamNameById(teamId) {
+            if (!teamId) return '-';
+            for (var i = 0; i < teamListCache.length; i++) {
+                if (teamListCache[i].id === teamId) {
+                    return teamListCache[i].teamName;
+                }
+            }
+            return '-';
+        }
+
+        // 初始化加载班组列表
+        loadTeamList();
+
         var tableIns = spTable.render({
             url: '${request.contextPath}/basedata/workUnit/page',
             cols: [
@@ -72,6 +104,10 @@
                     field: 'location', title: '位置'
                 }, {
                     field: 'capacity', title: '产能'
+                }, {
+                    field: 'teamId', title: '关联班组', templet: function (d) {
+                        return getTeamNameById(d.teamId);
+                    }
                 }, {
                     field: 'status', title: '状态', templet: function (d) {
                         var statusMap = {0: '启用', 1: '停用'};

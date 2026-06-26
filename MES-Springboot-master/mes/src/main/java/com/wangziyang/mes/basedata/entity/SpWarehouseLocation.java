@@ -23,6 +23,14 @@ public class SpWarehouseLocation extends BaseEntity {
     private BigDecimal currentQty;
     private Integer status;
 
+    private String shelfId;
+    private Integer shelfRow;
+    private Integer shelfColumn;
+    private Integer shelfLayer;
+    private String color;
+    private String areaCode;
+    private String modelType;
+
     public String getWarehouseCode() {
         return warehouseCode;
     }
@@ -109,5 +117,61 @@ public class SpWarehouseLocation extends BaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getShelfId() {
+        return shelfId;
+    }
+
+    public void setShelfId(String shelfId) {
+        this.shelfId = shelfId;
+    }
+
+    public Integer getShelfRow() {
+        return shelfRow;
+    }
+
+    public void setShelfRow(Integer shelfRow) {
+        this.shelfRow = shelfRow;
+    }
+
+    public Integer getShelfColumn() {
+        return shelfColumn;
+    }
+
+    public void setShelfColumn(Integer shelfColumn) {
+        this.shelfColumn = shelfColumn;
+    }
+
+    public Integer getShelfLayer() {
+        return shelfLayer;
+    }
+
+    public void setShelfLayer(Integer shelfLayer) {
+        this.shelfLayer = shelfLayer;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public String getModelType() {
+        return modelType;
+    }
+
+    public void setModelType(String modelType) {
+        this.modelType = modelType;
     }
 }

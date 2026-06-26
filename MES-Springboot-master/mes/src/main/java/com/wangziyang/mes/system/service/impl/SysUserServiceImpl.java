@@ -46,22 +46,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void save(SysUserDTO record) throws Exception {
-        //MD5算法计算3次
         String result = new Md5Hash(record.getPassword(), record.getUsername(),3).toString();
         record.setPassword(result);
+        
+        if (org.apache.commons.lang3.StringUtils.isEmpty(record.getBirthday())) {
+            record.setBirthday(null);
+        }
+        
         sysUserMapper.insert(record);
         sysRoleService.rebuild(record);
     }
 
-    /**
-     * 更新
-     *
-     * @param record 用户信息
-     * @throws Exception 异常
-     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(SysUserDTO record) throws Exception {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(record.getBirthday())) {
+            record.setBirthday(null);
+        }
+        
         sysUserMapper.updateById(record);
         sysRoleService.rebuild(record);
     }

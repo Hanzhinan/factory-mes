@@ -36,17 +36,11 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label for="js-workUnitName" class="layui-form-label">加工单元</label>
-                        <div class="layui-input-inline">
-                            <input type="text" id="js-workUnitName" name="workUnitName" autocomplete="off"
-                                   class="layui-input" value="${result.workUnitName}">
-                        </div>
-                    </div>
-                    <div class="layui-form-item">
-                        <label for="js-deviceName" class="layui-form-label">设备名称</label>
-                        <div class="layui-input-inline">
-                            <input type="text" id="js-deviceName" name="deviceName" autocomplete="off"
-                                   class="layui-input" value="${result.deviceName}">
+                        <label for="js-deviceId" class="layui-form-label">设备名称</label>
+                        <div class="layui-input-inline" style="width: 310px;">
+                            <select id="js-deviceId" name="deviceId" lay-search="">
+                                <option value="">请选择设备</option>
+                            </select>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -72,6 +66,14 @@
                                    <#if result.status == 1>checked</#if>>
                         </div>
                     </div>
+                    <div class="layui-form-item">
+                        <label for="js-teamId" class="layui-form-label">关联班组</label>
+                        <div class="layui-input-inline" style="width: 310px;">
+                            <select id="js-teamId" name="teamId" lay-search="">
+                                <option value="">请选择班组</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="layui-form-item layui-hide">
                     <div class="layui-input-block">
@@ -87,6 +89,53 @@
     layui.use(['form', 'util'], function () {
         var form = layui.form,
             util = layui.util;
+
+        function loadTeamList() {
+            $.ajax({
+                type: "POST",
+                url: "${request.contextPath}/basedata/team/page",
+                data: {pageNo: 1, pageSize: 1000},
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        var teamList = res.data.records;
+                        var $select = $('#js-teamId');
+                        $.each(teamList, function (i, team) {
+                            var selected = '';
+                            if ('${result.teamId}' && team.id === '${result.teamId}') {
+                                selected = 'selected';
+                            }
+                            $select.append('<option value="' + team.id + '" ' + selected + '>' + team.teamName + '</option>');
+                        });
+                        form.render('select');
+                    }
+                }
+            });
+        }
+
+        function loadDeviceList() {
+            $.ajax({
+                type: "POST",
+                url: "${request.contextPath}/basedata/groupDevice/page",
+                data: {pageNo: 1, pageSize: 1000},
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        var deviceList = res.data.records;
+                        var $select = $('#js-deviceId');
+                        $.each(deviceList, function (i, device) {
+                            var selected = '';
+                            if ('${result.deviceId}' && device.id === '${result.deviceId}') {
+                                selected = 'selected';
+                            }
+                            $select.append('<option value="' + device.id + '" ' + selected + '>' + device.deviceName + '</option>');
+                        });
+                        form.render('select');
+                    }
+                }
+            });
+        }
+
+        loadTeamList();
+        loadDeviceList();
 
         form.on('submit(js-submit-filter)', function (data) {
             spUtil.submitForm({

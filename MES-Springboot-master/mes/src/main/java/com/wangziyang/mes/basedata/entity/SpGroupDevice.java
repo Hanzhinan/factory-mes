@@ -22,6 +22,11 @@ public class SpGroupDevice extends BaseEntity {
     private String location;
     private Integer status;
     private BigDecimal capacity;
+    
+    /**
+     * 关联班组ID
+     */
+    private String teamId;
 
     public String getDeviceCode() {
         return deviceCode;
@@ -109,5 +114,13 @@ public class SpGroupDevice extends BaseEntity {
 
     public void setCapacity(BigDecimal capacity) {
         this.capacity = capacity;
+    }
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
     }
 }

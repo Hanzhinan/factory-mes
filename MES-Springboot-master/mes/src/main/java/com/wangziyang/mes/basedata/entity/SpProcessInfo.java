@@ -17,10 +17,21 @@ public class SpProcessInfo extends BaseEntity {
     private String workUnitCode;
     private String workUnitName;
     private String deviceCode;
+    
+    /**
+     * 关联编组设备ID
+     */
+    private String deviceId;
+    
     private String deviceName;
     private BigDecimal standardTime;
     private Integer sequence;
     private Integer status;
+    
+    /**
+     * 关联班组ID
+     */
+    private String teamId;
 
     public String getProcessCode() {
         return processCode;
@@ -70,6 +81,14 @@ public class SpProcessInfo extends BaseEntity {
         this.deviceCode = deviceCode;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
     public String getDeviceName() {
         return deviceName;
     }
@@ -100,5 +119,13 @@ public class SpProcessInfo extends BaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
     }
 }

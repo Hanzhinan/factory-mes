@@ -58,6 +58,14 @@
                                    <#if result.status == 1>checked</#if>>
                         </div>
                     </div>
+                    <div class="layui-form-item">
+                        <label for="js-teamId" class="layui-form-label">关联班组</label>
+                        <div class="layui-input-inline" style="width: 310px;">
+                            <select id="js-teamId" name="teamId" lay-search="">
+                                <option value="">请选择班组</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="layui-form-item layui-hide">
                     <div class="layui-input-block">
@@ -73,6 +81,34 @@
     layui.use(['form', 'util'], function () {
         var form = layui.form,
             util = layui.util;
+
+        // 加载班组列表
+        function loadTeamList() {
+            $.ajax({
+                type: "POST",
+                url: "${request.contextPath}/basedata/team/page",
+                data: {pageNo: 1, pageSize: 1000},
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        var teamList = res.data.records;
+                        var $select = $('#js-teamId');
+                        $.each(teamList, function (i, team) {
+                            // 如果是编辑模式且当前记录的 teamId 匹配，则设为选中
+                            var selected = '';
+                            if ('${result.teamId}' && team.id === '${result.teamId}') {
+                                selected = 'selected';
+                            }
+                            $select.append('<option value="' + team.id + '" ' + selected + '>' + team.teamName + '</option>');
+                        });
+                        // 重新渲染表单
+                        form.render('select');
+                    }
+                }
+            });
+        }
+
+        // 页面加载时初始化
+        loadTeamList();
 
         form.on('submit(js-submit-filter)', function (data) {
             spUtil.submitForm({

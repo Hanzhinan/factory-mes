@@ -66,6 +66,9 @@ public class SysDictController extends BaseController {
     @PostMapping("/add-or-update")
     @ResponseBody
     public Result addOrUpdate(SysDict record) {
+        if (StringUtils.isEmpty(record.getId())) {
+            record.setId(null);
+        }
         sysDictService.saveOrUpdate(record);
         return Result.success(record.getId());
     }

@@ -48,6 +48,9 @@
                     class="layui-icon">&#xe640;</i>批量删除
         </button>
         <button class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>添加</button>
+        <button class="layui-btn layui-btn-sm layui-btn-warm" onclick="open3DWarehouse()">
+            <i class="layui-icon">&#xe60a;</i>3D可视化预览
+        </button>
     </div>
 </script>
 
@@ -57,6 +60,10 @@
 </script>
 
 <script>
+    function open3DWarehouse() {
+        window.open('${request.contextPath}/digital/simulation/warehouse-ui', '_blank');
+    }
+
     layui.use(['form', 'table', 'spLayer', 'spTable'], function () {
         var form = layui.form,
             table = layui.table,
@@ -79,11 +86,15 @@
                 }, {
                     field: 'locationName', title: '库位名称'
                 }, {
-                    field: 'xCoordinate', title: 'X坐标'
+                    field: 'areaCode', title: '库区编码'
                 }, {
-                    field: 'yCoordinate', title: 'Y坐标'
+                    field: 'shelfId', title: '货架ID'
                 }, {
-                    field: 'zCoordinate', title: 'Z坐标'
+                    field: 'shelfRow', title: '行'
+                }, {
+                    field: 'shelfColumn', title: '列'
+                }, {
+                    field: 'shelfLayer', title: '层'
                 }, {
                     field: 'capacity', title: '容量'
                 }, {

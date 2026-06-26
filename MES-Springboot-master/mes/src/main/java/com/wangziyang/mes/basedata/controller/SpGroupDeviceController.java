@@ -9,6 +9,7 @@ import com.wangziyang.mes.common.BaseController;
 import com.wangziyang.mes.common.Result;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,12 +27,14 @@ public class SpGroupDeviceController extends BaseController {
 
     @ApiOperation("编组设备管理界面UI")
     @GetMapping("/list-ui")
+    @RequiresPermissions("basedata:groupDevice:view")
     public String listUI(Model model) {
         return "basedata/groupDevice/list";
     }
 
     @ApiOperation("编组设备管理修改界面")
     @GetMapping("/add-or-update-ui")
+    @RequiresPermissions("basedata:groupDevice:add")
     public String addOrUpdateUI(Model model, SpGroupDevice record) {
         if (StringUtils.isNotEmpty(record.getId())) {
             SpGroupDevice spGroupDevice = iSpGroupDeviceService.getById(record.getId());
@@ -43,6 +46,7 @@ public class SpGroupDeviceController extends BaseController {
     @ApiOperation("编组设备管理界面分页查询")
     @PostMapping("/page")
     @ResponseBody
+    @RequiresPermissions("basedata:groupDevice:view")
     public Result page(SpGroupDeviceReq req) {
         QueryWrapper<SpGroupDevice> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(req.getDeviceCode())) {
@@ -61,6 +65,7 @@ public class SpGroupDeviceController extends BaseController {
     @ApiOperation("编组设备管理修改、新增")
     @PostMapping("/add-or-update")
     @ResponseBody
+    @RequiresPermissions("basedata:groupDevice:add")
     public Result addOrUpdate(SpGroupDevice record) {
         iSpGroupDeviceService.saveOrUpdate(record);
         return Result.success();
@@ -69,6 +74,7 @@ public class SpGroupDeviceController extends BaseController {
     @ApiOperation("删除编组设备信息")
     @PostMapping("/delete")
     @ResponseBody
+    @RequiresPermissions("basedata:groupDevice:delete")
     public Result delete(SpGroupDevice req) {
         iSpGroupDeviceService.removeById(req.getId());
         return Result.success();

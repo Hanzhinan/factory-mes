@@ -19,6 +19,9 @@ import java.util.Map;
  * @author SongPeng
  * @date 2019/9/27 16:05
  */
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+
 @RequestMapping("/admin")
 @Controller("adminSysLoginController")
 public class SysLoginController extends BaseController {
@@ -39,6 +42,18 @@ public class SysLoginController extends BaseController {
      */
     @GetMapping({"", "/index"})
     public String indexUI(Model model) {
+        Subject subject = SecurityUtils.getSubject();
+        Object principal = subject.getPrincipal();
+        if (principal != null) {
+            if (principal instanceof String) {
+                model.addAttribute("username", principal);
+            } else if (principal instanceof com.wangziyang.mes.system.dto.SysUserDTO) {
+                com.wangziyang.mes.system.dto.SysUserDTO user = (com.wangziyang.mes.system.dto.SysUserDTO) principal;
+                model.addAttribute("username", user.getUsername());
+            } else {
+                model.addAttribute("username", "admin");
+            }
+        }
         return "admin/index";
     }
 

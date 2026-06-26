@@ -95,6 +95,59 @@
                                    <#if result.status == 2>checked</#if>>
                         </div>
                     </div>
+                    <div class="layui-form-item">
+                        <label for="js-areaCode" class="layui-form-label">库区编码</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="js-areaCode" name="areaCode" autocomplete="off"
+                                   class="layui-input" value="${result.areaCode}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="js-shelfId" class="layui-form-label">货架ID</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="js-shelfId" name="shelfId" autocomplete="off"
+                                   class="layui-input" value="${result.shelfId}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="js-shelfRow" class="layui-form-label">货架行号</label>
+                        <div class="layui-input-inline">
+                            <input type="number" id="js-shelfRow" name="shelfRow" autocomplete="off"
+                                   class="layui-input" value="${result.shelfRow}">
+                        </div>
+                        <label for="js-shelfColumn" class="layui-form-label">货架列号</label>
+                        <div class="layui-input-inline">
+                            <input type="number" id="js-shelfColumn" name="shelfColumn" autocomplete="off"
+                                   class="layui-input" value="${result.shelfColumn}">
+                        </div>
+                        <label for="js-shelfLayer" class="layui-form-label">货架层号</label>
+                        <div class="layui-input-inline">
+                            <input type="number" id="js-shelfLayer" name="shelfLayer" autocomplete="off"
+                                   class="layui-input" value="${result.shelfLayer}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="js-color" class="layui-form-label">3D显示颜色</label>
+                        <div class="layui-input-inline">
+                            <select id="js-color" name="color">
+                                <option value="#90EE90" <#if result.color == "#90EE90">selected</#if>>绿色-可用</option>
+                                <option value="#FF6347" <#if result.color == "#FF6347">selected</#if>>红色-占用</option>
+                                <option value="#FFD700" <#if result.color == "#FFD700">selected</#if>>金色-特殊</option>
+                                <option value="#87CEEB" <#if result.color == "#87CEEB">selected</#if>>蓝色-待处理</option>
+                                <option value="#D3D3D3" <#if result.color == "#D3D3D3">selected</#if>>灰色-禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="js-modelType" class="layui-form-label">模型类型</label>
+                        <div class="layui-input-inline">
+                            <select id="js-modelType" name="modelType">
+                                <option value="SHELF" <#if result.modelType == "SHELF">selected</#if>>货架</option>
+                                <option value="RACK" <#if result.modelType == "RACK">selected</#if>>立库</option>
+                                <option value="LOCATION" <#if result.modelType == "LOCATION">selected</#if>>库位</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="layui-form-item layui-hide">
                     <div class="layui-input-block">

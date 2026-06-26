@@ -63,6 +63,34 @@
             spLayer = layui.spLayer,
             spTable = layui.spTable;
 
+        var teamListCache = [];
+
+        function loadTeamList() {
+            $.ajax({
+                type: "POST",
+                url: '${request.contextPath}/basedata/team/page',
+                data: {pageNo: 1, pageSize: 1000},
+                async: false,
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        teamListCache = res.data.records;
+                    }
+                }
+            });
+        }
+
+        function getTeamNameById(teamId) {
+            if (!teamId) return '-';
+            for (var i = 0; i < teamListCache.length; i++) {
+                if (teamListCache[i].id === teamId) {
+                    return teamListCache[i].teamName;
+                }
+            }
+            return '-';
+        }
+
+        loadTeamList();
+
         var tableIns = spTable.render({
             url: '${request.contextPath}/basedata/groupDevice/page',
             cols: [
@@ -81,7 +109,9 @@
                 }, {
                     field: 'groupName', title: '编组名称'
                 }, {
-                    field: 'workUnitName', title: '加工单元'
+                    field: 'teamId', title: '关联班组', templet: function (d) {
+                        return getTeamNameById(d.teamId);
+                    }
                 }, {
                     field: 'location', title: '位置'
                 }, {

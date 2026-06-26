@@ -8,6 +8,7 @@ import com.wangziyang.mes.basedata.entity.SpTeam;
 import com.wangziyang.mes.basedata.request.SpTeamPageReq;
 import com.wangziyang.mes.basedata.service.ISpTeamService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,12 +22,14 @@ public class SpTeamController extends BaseController {
     private ISpTeamService spTeamService;
 
     @GetMapping("/list-ui")
+    @RequiresPermissions("basedata:team:view")
     public String listUI(Model model) {
         return "basedata/team/list";
     }
 
     @PostMapping("/page")
     @ResponseBody
+    @RequiresPermissions("basedata:team:view")
     public Result page(SpTeamPageReq req) {
         QueryWrapper<SpTeam> qw = new QueryWrapper<>();
         qw.orderByDesc("create_time");
@@ -41,6 +44,7 @@ public class SpTeamController extends BaseController {
     }
 
     @GetMapping("/add-or-update-ui")
+    @RequiresPermissions("basedata:team:add")
     public String addOrUpdateUI(Model model, SpTeam record) {
         SpTeam result;
         if (StringUtils.isNotEmpty(record.getId())) {
@@ -55,6 +59,7 @@ public class SpTeamController extends BaseController {
 
     @PostMapping("/add-or-update")
     @ResponseBody
+    @RequiresPermissions("basedata:team:add")
     public Result addOrUpdate(SpTeam record) {
         spTeamService.saveOrUpdate(record);
         return Result.success(record.getId());
@@ -62,6 +67,7 @@ public class SpTeamController extends BaseController {
 
     @PostMapping("/delete")
     @ResponseBody
+    @RequiresPermissions("basedata:team:delete")
     public Result delete(String id) {
         spTeamService.removeById(id);
         return Result.success();

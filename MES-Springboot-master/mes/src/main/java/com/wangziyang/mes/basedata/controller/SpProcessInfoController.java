@@ -9,6 +9,7 @@ import com.wangziyang.mes.common.BaseController;
 import com.wangziyang.mes.common.Result;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,12 +27,14 @@ public class SpProcessInfoController extends BaseController {
 
     @ApiOperation("工序信息管理界面UI")
     @GetMapping("/list-ui")
+    @RequiresPermissions("basedata:processInfo:view")
     public String listUI(Model model) {
         return "basedata/processInfo/list";
     }
 
     @ApiOperation("工序信息管理修改界面")
     @GetMapping("/add-or-update-ui")
+    @RequiresPermissions("basedata:processInfo:add")
     public String addOrUpdateUI(Model model, SpProcessInfo record) {
         if (StringUtils.isNotEmpty(record.getId())) {
             SpProcessInfo spProcessInfo = iSpProcessInfoService.getById(record.getId());
@@ -43,6 +46,7 @@ public class SpProcessInfoController extends BaseController {
     @ApiOperation("工序信息管理界面分页查询")
     @PostMapping("/page")
     @ResponseBody
+    @RequiresPermissions("basedata:processInfo:view")
     public Result page(SpProcessInfoReq req) {
         QueryWrapper<SpProcessInfo> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(req.getProcessCode())) {
@@ -62,6 +66,7 @@ public class SpProcessInfoController extends BaseController {
     @ApiOperation("工序信息管理修改、新增")
     @PostMapping("/add-or-update")
     @ResponseBody
+    @RequiresPermissions("basedata:processInfo:add")
     public Result addOrUpdate(SpProcessInfo record) {
         iSpProcessInfoService.saveOrUpdate(record);
         return Result.success();
@@ -70,6 +75,7 @@ public class SpProcessInfoController extends BaseController {
     @ApiOperation("删除工序信息")
     @PostMapping("/delete")
     @ResponseBody
+    @RequiresPermissions("basedata:processInfo:delete")
     public Result delete(SpProcessInfo req) {
         iSpProcessInfoService.removeById(req.getId());
         return Result.success();

@@ -30,4 +30,15 @@ public class DigitalSimulationController extends BaseController{
         return "digitization/3DProject";
     }
 
+    /**
+     * 3D库房库位可视化界面
+     *
+     * @return 3D库房库位可视化界面
+     */
+    @ApiOperation("3D库房库位可视化UI")
+    @GetMapping("/warehouse-ui")
+    public String warehouseUI() {
+        return "digitization/3DWarehouse";
+    }
+
 }

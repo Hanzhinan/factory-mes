@@ -95,6 +95,42 @@
                         <div class=" text-effect flowProcss  " id="js-flowProcess" name="flowProcss">
                         </div>
                     </div>
+                    <div class="layui-form-item">
+                        <label for="js-material" class="layui-form-label">材质
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="js-material" name="material" autocomplete="off"
+                                   class="layui-input" value="${result.material}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="js-leadTime" class="layui-form-label">物料需求提前期(天)
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" id="js-leadTime" name="leadTime" autocomplete="off"
+                                   class="layui-input" value="${result.leadTime}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="js-safetyStock" class="layui-form-label">安全库存
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" id="js-safetyStock" name="safetyStock" step="0.01" autocomplete="off"
+                                   class="layui-input" value="${result.safetyStock}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="js-materialSource" class="layui-form-label">物料来源
+                        </label>
+                        <div class="layui-input-inline">
+                            <select id="js-materialSource" name="materialSource" lay-search="">
+                                <option value="">请选择物料来源</option>
+                                <option value="自制" <#if result.materialSource == "自制">selected</#if>>自制</option>
+                                <option value="外购" <#if result.materialSource == "外购">selected</#if>>外购</option>
+                                <option value="外协" <#if result.materialSource == "外协">selected</#if>>外协</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="layui-form-item">
                         <label for="js-is-deleted" class="layui-form-label sp-required">状态
@@ -214,7 +250,7 @@
         //监听提交
         form.on('submit(js-submit-filter)', function (data) {
             spUtil.submitForm({
-                url: "${request.contextPath}/basedata/materile/add-or-update",
+                url: "${request.contextPath}/basedata/materiel/add-or-update",
                 data: data.field
             });
             return false;

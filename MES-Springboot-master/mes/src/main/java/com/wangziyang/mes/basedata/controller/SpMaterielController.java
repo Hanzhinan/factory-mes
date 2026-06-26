@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,6 +61,7 @@ public class SpMaterielController extends BaseController {
     @ApiOperation("物料管理界面UI")
     @ApiImplicitParams({@ApiImplicitParam(name = "model", value = "模型", defaultValue = "模型")})
     @GetMapping("/list-ui")
+    @RequiresPermissions("basedata:materiel:view")
     public String listUI(Model model) {
         return "basedata/materiel/list";
     }
@@ -74,6 +76,7 @@ public class SpMaterielController extends BaseController {
      */
     @ApiOperation("物料管理修改界面")
     @GetMapping("/add-or-update-ui")
+    @RequiresPermissions("basedata:materiel:add")
     public String addOrUpdateUI(Model model, SpTableManager record) {
         if (StringUtils.isNotEmpty(record.getId())) {
             SpMaterile SpMaterile = iSpMaterileService.getById(record.getId());
@@ -93,6 +96,7 @@ public class SpMaterielController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "req", value = "请求参数", defaultValue = "请求参数")})
     @PostMapping("/page")
     @ResponseBody
+    @RequiresPermissions("basedata:materiel:view")
     public Result page(SpMaterielReq req) {
         QueryWrapper<SpMaterile> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(req.getMaterielLike()))
@@ -116,6 +120,7 @@ public class SpMaterielController extends BaseController {
     @ApiOperation("物料管理修改、新增")
     @PostMapping("/add-or-update")
     @ResponseBody
+    @RequiresPermissions("basedata:materiel:add")
     public Result addOrUpdate(SpMaterile record) {
         if (StrUtil.isNotBlank(record.getFlowId())) {
             SpFlow spflow = iSpFlowService.getById(record.getFlowId());
@@ -138,6 +143,7 @@ public class SpMaterielController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "req", value = "物料实体", defaultValue = "物料实体")})
     @PostMapping("/delete")
     @ResponseBody
+    @RequiresPermissions("basedata:materiel:delete")
     public Result deleteByTableNameId(SpMaterile req) throws Exception {
         iSpMaterileService.removeById(req.getId());
         return Result.success();

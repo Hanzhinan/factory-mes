@@ -67,6 +67,9 @@ public class SysDepartmentController extends BaseController {
     @PostMapping("/add-or-update")
     @ResponseBody
     public Result addOrUpdate(SysDepartment record) {
+        if (StringUtils.isEmpty(record.getId())) {
+            record.setId(null);
+        }
         sysDepartmentService.saveOrUpdate(record);
         return Result.success(record.getId());
     }

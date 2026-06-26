@@ -46,7 +46,7 @@
                 <a href="javascript:;" data-clear="清理" class="splayui-clear"><i class="fa fa-trash-o"></i></a>
             </li>
             <li class="layui-nav-item splayui-setting">
-                <a href="javascript:;">admin</a>
+                <a href="javascript:;">${username}</a>
                 <dl class="layui-nav-child">
                     <dd>
                         <a href="javascript:;" data-iframe-tab="page/user-setting.html" data-title="基本资料"

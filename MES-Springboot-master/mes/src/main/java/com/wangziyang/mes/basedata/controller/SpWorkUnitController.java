@@ -9,6 +9,7 @@ import com.wangziyang.mes.common.BaseController;
 import com.wangziyang.mes.common.Result;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,12 +27,14 @@ public class SpWorkUnitController extends BaseController {
 
     @ApiOperation("加工单元管理界面UI")
     @GetMapping("/list-ui")
+    @RequiresPermissions("basedata:workUnit:view")
     public String listUI(Model model) {
         return "basedata/workUnit/list";
     }
 
     @ApiOperation("加工单元管理修改界面")
     @GetMapping("/add-or-update-ui")
+    @RequiresPermissions("basedata:workUnit:add")
     public String addOrUpdateUI(Model model, SpWorkUnit record) {
         if (StringUtils.isNotEmpty(record.getId())) {
             SpWorkUnit spWorkUnit = iSpWorkUnitService.getById(record.getId());
@@ -43,6 +46,7 @@ public class SpWorkUnitController extends BaseController {
     @ApiOperation("加工单元管理界面分页查询")
     @PostMapping("/page")
     @ResponseBody
+    @RequiresPermissions("basedata:workUnit:view")
     public Result page(SpWorkUnitReq req) {
         QueryWrapper<SpWorkUnit> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(req.getUnitCode())) {
@@ -58,6 +62,7 @@ public class SpWorkUnitController extends BaseController {
     @ApiOperation("加工单元管理修改、新增")
     @PostMapping("/add-or-update")
     @ResponseBody
+    @RequiresPermissions("basedata:workUnit:add")
     public Result addOrUpdate(SpWorkUnit record) {
         iSpWorkUnitService.saveOrUpdate(record);
         return Result.success();
@@ -66,6 +71,7 @@ public class SpWorkUnitController extends BaseController {
     @ApiOperation("删除加工单元信息")
     @PostMapping("/delete")
     @ResponseBody
+    @RequiresPermissions("basedata:workUnit:delete")
     public Result delete(SpWorkUnit req) {
         iSpWorkUnitService.removeById(req.getId());
         return Result.success();

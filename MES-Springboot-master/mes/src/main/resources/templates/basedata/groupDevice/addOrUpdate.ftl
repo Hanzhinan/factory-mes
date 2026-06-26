@@ -57,10 +57,11 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label for="js-workUnitName" class="layui-form-label">加工单元</label>
-                        <div class="layui-input-inline">
-                            <input type="text" id="js-workUnitName" name="workUnitName" autocomplete="off"
-                                   class="layui-input" value="${result.workUnitName}">
+                        <label for="js-teamId" class="layui-form-label">关联班组</label>
+                        <div class="layui-input-inline" style="width: 310px;">
+                            <select id="js-teamId" name="teamId" lay-search="">
+                                <option value="">请选择班组</option>
+                            </select>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -103,6 +104,30 @@
     layui.use(['form', 'util'], function () {
         var form = layui.form,
             util = layui.util;
+
+        function loadTeamList() {
+            $.ajax({
+                type: "POST",
+                url: "${request.contextPath}/basedata/team/page",
+                data: {pageNo: 1, pageSize: 1000},
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        var teamList = res.data.records;
+                        var $select = $('#js-teamId');
+                        $.each(teamList, function (i, team) {
+                            var selected = '';
+                            if ('${result.teamId}' && team.id === '${result.teamId}') {
+                                selected = 'selected';
+                            }
+                            $select.append('<option value="' + team.id + '" ' + selected + '>' + team.teamName + '</option>');
+                        });
+                        form.render('select');
+                    }
+                }
+            });
+        }
+
+        loadTeamList();
 
         form.on('submit(js-submit-filter)', function (data) {
             spUtil.submitForm({

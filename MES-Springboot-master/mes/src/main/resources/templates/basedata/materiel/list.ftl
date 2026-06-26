@@ -66,22 +66,28 @@
 
         // 表格及数据初始化
         var tableIns = spTable.render({
-            url: '${request.contextPath}/basedata/materile/page',
+            url: '${request.contextPath}/basedata/materiel/page',
             cols: [
                 [{
                     type: 'checkbox'
                 }, {
                     field: 'materiel', title: '物料编码'
                 }, {
-                    field: 'materielDesc', title: '物料描述'
+                    field: 'materielDesc', title: '物料名称'
                 }, {
-                    field: 'productGroup', title: '产品组'
+                    field: 'matType', title: '物料类型'
                 }, {
-                    field: 'size', title: '尺寸'
+                    field: 'unit', title: '计量单位'
                 }, {
-                    field: 'flowDesc', title: '流程描述'
+                    field: 'model', title: '规格/型号'
                 }, {
-                    field: 'model', title: '型号'
+                    field: 'material', title: '材质'
+                }, {
+                    field: 'leadTime', title: '物料需求提前期(天)'
+                }, {
+                    field: 'safetyStock', title: '安全库存'
+                }, {
+                    field: 'materialSource', title: '物料来源'
                 }, {
                     field: 'deleted', title: '状态', templet: function (d) {
                         return spConfig.isDeletedDict[d.deleted];
@@ -147,7 +153,7 @@
                 var index = spLayer.open({
                     title: '添加',
                     area: ['90%', '90%'],
-                    content: '${request.contextPath}/basedata/materile/add-or-update-ui'
+                    content: '${request.contextPath}/basedata/materiel/add-or-update-ui'
                 });
             }
         });
@@ -165,7 +171,7 @@
                     area: ['90%', '90%'],
                     // 请求url参数
                     spWhere: {id: data.id},
-                    content: '${request.contextPath}/basedata/materile/add-or-update-ui'
+                    content: '${request.contextPath}/basedata/materiel/add-or-update-ui'
                 });
             }
 
@@ -173,7 +179,7 @@
             if (obj.event === 'delete') {
                 layer.confirm('确认要删除吗？', function (index) {
                     spUtil.ajax({
-                        url: '${request.contextPath}/basedata/materile/delete',
+                        url: '${request.contextPath}/basedata/materiel/delete',
                         async: false,
                         type: 'POST',
                         // 是否显示 loading

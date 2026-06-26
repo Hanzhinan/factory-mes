@@ -2,6 +2,7 @@ package com.wangziyang.mes.basedata.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.wangziyang.mes.common.BaseEntity;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -21,12 +22,12 @@ public class SpMaterile extends BaseEntity {
     private String materiel;
 
     /**
-     * 物料描述
+     * 物料描述/物料名称
      */
     private String materielDesc;
 
     /**
-     * 基本单位
+     * 基本单位/计量单位
      */
     private String unit;
 
@@ -54,9 +55,29 @@ public class SpMaterile extends BaseEntity {
      */
     private String flowDesc;
     /**
-     * 型号
+     * 规格/型号
      */
     private String model;
+
+    /**
+     * 材质
+     */
+    private String material;
+
+    /**
+     * 物料需求提前期(天)
+     */
+    private Integer leadTime;
+
+    /**
+     * 安全库存
+     */
+    private BigDecimal safetyStock;
+
+    /**
+     * 物料来源
+     */
+    private String materialSource;
 
     /**
      * 状态(00:删除;01:正常;02:禁用)
@@ -257,5 +278,37 @@ public class SpMaterile extends BaseEntity {
      */
     public void setFlowDesc(String flowDesc) {
         this.flowDesc = flowDesc;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public Integer getLeadTime() {
+        return leadTime;
+    }
+
+    public void setLeadTime(Integer leadTime) {
+        this.leadTime = leadTime;
+    }
+
+    public BigDecimal getSafetyStock() {
+        return safetyStock;
+    }
+
+    public void setSafetyStock(BigDecimal safetyStock) {
+        this.safetyStock = safetyStock;
+    }
+
+    public String getMaterialSource() {
+        return materialSource;
+    }
+
+    public void setMaterialSource(String materialSource) {
+        this.materialSource = materialSource;
     }
 }

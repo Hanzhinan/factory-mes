@@ -74,10 +74,15 @@
 
         var roleId = '${result.id}';
         var treeIns;
+        var originalTreeData = null;
+        var authorizedMenuIds = [];
 
         function convertTreeData(nodes) {
             for (var i = 0; i < nodes.length; i++) {
                 nodes[i].title = nodes[i].name;
+                nodes[i].spread = true;
+                // 强制设置 checked: false，不依赖后端返回的值
+                nodes[i].checked = false;
                 if (nodes[i].children && nodes[i].children.length > 0) {
                     convertTreeData(nodes[i].children);
                 }
@@ -92,7 +97,12 @@
                 data: {roleId: roleId},
                 success: function (result) {
                     if (result.code === 0) {
-                        var treeData = convertTreeData(result.data);
+                        originalTreeData = result.data.tree;
+                        authorizedMenuIds = result.data.authorizedIds || [];
+                        var treeData = convertTreeData(result.data.tree);
+                        console.log('加载的菜单树数据:', JSON.stringify(treeData, null, 2));
+                        console.log('已授权菜单ID:', authorizedMenuIds);
+                        
                         treeIns = tree.render({
                             elem: '#js-menu-tree',
                             data: treeData,
@@ -101,6 +111,13 @@
                             click: function (obj) {
                             }
                         });
+                        
+                        // 使用 tree.setChecked 方法精确控制勾选状态
+                        // 只勾选叶子节点，避免父子联动问题
+                        if (authorizedMenuIds.length > 0) {
+                            console.log('设置已授权菜单:', authorizedMenuIds);
+                            tree.setChecked('menuTree', authorizedMenuIds);
+                        }
                     }
                 }
             });
@@ -108,18 +125,58 @@
 
         loadMenuTree();
 
+        function findLeafNodes(nodes, leafIds) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (!nodes[i].children || nodes[i].children.length === 0) {
+                    leafIds.push(nodes[i].id);
+                } else {
+                    findLeafNodes(nodes[i].children, leafIds);
+                }
+            }
+        }
+
+        function findCheckedLeafIds(nodes, checkedIds) {
+            var result = [];
+            for (var i = 0; i < nodes.length; i++) {
+                var node = nodes[i];
+                var nodeId = node.id;
+                // 如果是叶子节点且被勾选
+                if ((!node.children || node.children.length === 0) && checkedIds.indexOf(nodeId) !== -1) {
+                    result.push(nodeId);
+                }
+                // 递归处理子节点
+                if (node.children && node.children.length > 0) {
+                    var childResults = findCheckedLeafIds(node.children, checkedIds);
+                    result = result.concat(childResults);
+                }
+            }
+            return result;
+        }
+
         form.on('submit(js-submit-filter)', function (data) {
-            var menuIds = tree.getChecked('menuTree');
-            var checkedIds = [];
-            function collectIds(nodes) {
+            // 获取所有被勾选的节点
+            var checkedData = tree.getChecked('menuTree');
+            console.log('getChecked返回的数据:', JSON.stringify(checkedData, null, 2));
+            
+            // 只提取被勾选的叶子节点ID（从原始树数据中找）
+            var leafIds = [];
+            function extractLeafIds(nodes) {
                 for (var i = 0; i < nodes.length; i++) {
-                    checkedIds.push(nodes[i].id);
+                    // 只有叶子节点才保存
+                    if (!nodes[i].children || nodes[i].children.length === 0) {
+                        var nodeId = nodes[i].id || (nodes[i].data && nodes[i].data.id);
+                        if (nodeId) {
+                            leafIds.push(nodeId);
+                        }
+                    }
+                    // 递归处理子节点
                     if (nodes[i].children && nodes[i].children.length > 0) {
-                        collectIds(nodes[i].children);
+                        extractLeafIds(nodes[i].children);
                     }
                 }
             }
-            collectIds(menuIds);
+            extractLeafIds(checkedData);
+            console.log('最终保存的叶子节点ID:', leafIds);
 
             spUtil.submitForm({
                 url: "${request.contextPath}/admin/sys/role/add-or-update",
@@ -129,7 +186,7 @@
                     $.ajax({
                         type: "POST",
                         url: "${request.contextPath}/admin/sys/role/save-permissions?roleId=" + currentRoleId,
-                        data: JSON.stringify(checkedIds),
+                        data: JSON.stringify(leafIds),
                         contentType: "application/json",
                         dataType: "json",
                         success: function (permResult) {

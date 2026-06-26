@@ -17,6 +17,11 @@ public class SpWorkUnit extends BaseEntity {
     private String location;
     private BigDecimal capacity;
     private Integer status;
+    
+    /**
+     * 关联班组ID
+     */
+    private String teamId;
 
     public String getUnitCode() {
         return unitCode;
@@ -64,5 +69,13 @@ public class SpWorkUnit extends BaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
     }
 }

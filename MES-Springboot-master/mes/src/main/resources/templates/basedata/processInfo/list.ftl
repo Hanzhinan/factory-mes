@@ -63,6 +63,60 @@
             spLayer = layui.spLayer,
             spTable = layui.spTable;
 
+        var teamListCache = [];
+        var deviceListCache = [];
+
+        function loadTeamList() {
+            $.ajax({
+                type: "POST",
+                url: '${request.contextPath}/basedata/team/page',
+                data: {pageNo: 1, pageSize: 1000},
+                async: false,
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        teamListCache = res.data.records;
+                    }
+                }
+            });
+        }
+
+        function loadDeviceList() {
+            $.ajax({
+                type: "POST",
+                url: '${request.contextPath}/basedata/groupDevice/page',
+                data: {pageNo: 1, pageSize: 1000},
+                async: false,
+                success: function (res) {
+                    if (res.code === 0 && res.data.records) {
+                        deviceListCache = res.data.records;
+                    }
+                }
+            });
+        }
+
+        function getTeamNameById(teamId) {
+            if (!teamId) return '-';
+            for (var i = 0; i < teamListCache.length; i++) {
+                if (teamListCache[i].id === teamId) {
+                    return teamListCache[i].teamName;
+                }
+            }
+            return '-';
+        }
+
+        function getDeviceNameById(deviceId) {
+            if (!deviceId) return '-';
+            for (var i = 0; i < deviceListCache.length; i++) {
+                if (deviceListCache[i].id === deviceId) {
+                    return deviceListCache[i].deviceName;
+                }
+            }
+            return '-';
+        }
+
+        loadTeamList();
+        loadDeviceList();
+
         var tableIns = spTable.render({
             url: '${request.contextPath}/basedata/processInfo/page',
             cols: [
@@ -75,9 +129,13 @@
                 }, {
                     field: 'processDesc', title: '工序描述'
                 }, {
-                    field: 'workUnitName', title: '加工单元'
+                    field: 'teamId', title: '关联班组', templet: function (d) {
+                        return getTeamNameById(d.teamId);
+                    }
                 }, {
-                    field: 'deviceName', title: '设备名称'
+                    field: 'deviceId', title: '设备名称', templet: function (d) {
+                        return getDeviceNameById(d.deviceId);
+                    }
                 }, {
                     field: 'standardTime', title: '标准工时'
                 }, {

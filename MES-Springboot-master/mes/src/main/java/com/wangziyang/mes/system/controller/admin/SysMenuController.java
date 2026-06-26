@@ -59,6 +59,9 @@ public class SysMenuController extends BaseController {
     @PostMapping("/add-or-update")
     @ResponseBody
     public Result addOrUpdate(SysMenu record) {
+        if (StringUtils.isEmpty(record.getId())) {
+            record.setId(null);
+        }
         sysMenuService.saveOrUpdate(record);
         return Result.success(record.getId());
     }

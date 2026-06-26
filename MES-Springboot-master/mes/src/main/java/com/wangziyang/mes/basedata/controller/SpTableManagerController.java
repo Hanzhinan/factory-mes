@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -59,6 +60,7 @@ public class SpTableManagerController extends BaseController {
     @ApiOperation("主数据管理平台UI")
     @ApiImplicitParams({@ApiImplicitParam(name = "model", value = "模型", defaultValue = "模型")})
     @GetMapping("/list-ui")
+    @RequiresPermissions("basedata:manager:view")
     public String listUI(Model model) {
         return "basedata/manager/list";
     }
@@ -72,6 +74,7 @@ public class SpTableManagerController extends BaseController {
      */
     @ApiOperation("主数据管理平台修改界面")
     @GetMapping("/add-or-update-ui")
+    @RequiresPermissions("basedata:manager:add")
     public String addOrUpdateUI(Model model, SpTableManager record) {
         if (StringUtils.isNotEmpty(record.getId())) {
             SpTableManager spTableManager = iSpTableManagerService.getById(record.getId());
@@ -91,6 +94,7 @@ public class SpTableManagerController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "req", value = "请求参数", defaultValue = "请求参数")})
     @PostMapping("/page")
     @ResponseBody
+    @RequiresPermissions("basedata:manager:view")
     public Result page(SpTableManagerReq req) {
         IPage result = iSpTableManagerService.page(req);
         return Result.success(result);
@@ -106,6 +110,7 @@ public class SpTableManagerController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "req", value = "表名称", defaultValue = "请求参数")})
     @PostMapping("/by/tableName")
     @ResponseBody
+    @RequiresPermissions("basedata:manager:view")
     public Result queryTableFieldByName(SpTableManager req) throws Exception {
         List<SpTableManagerItem> result = iSpTableManagerService.queryTableFieldByName(req);
         return Result.success(result);
@@ -120,6 +125,7 @@ public class SpTableManagerController extends BaseController {
     @ApiOperation("主数据表头修改")
     @PostMapping("/add-or-update")
     @ResponseBody
+    @RequiresPermissions("basedata:manager:add")
     public Result addOrUpdate(@RequestBody SpTableManagerDto record) {
         //分解DTO 转化实体类
         SpTableManager spTableManager = new SpTableManager();
@@ -152,6 +158,7 @@ public class SpTableManagerController extends BaseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "req", value = "表信息", defaultValue = "表信息")})
     @PostMapping("delete/by/tableNameId")
     @ResponseBody
+    @RequiresPermissions("basedata:manager:delete")
     public Result deleteByTableNameId(SpTableManager req) throws Exception {
         iSpTableManagerService.removeById(req.getId());
         iSpTableManagerItemService.deleteItemBytableNameId(req.getId());
